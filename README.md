@@ -21,6 +21,15 @@
 const env = import.meta.env
 ```
 
+## Vue2 => Vue3 迁移手册
+https://v3.cn.vuejs.org/guide/migration/introduction.html
+
+```js
+setup(props, context) {
+  log(props.***, context.emit)
+}
+```
+
 ## 关于此次重构
 
 ### 背景及原因

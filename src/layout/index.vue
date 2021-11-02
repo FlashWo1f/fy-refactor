@@ -38,7 +38,8 @@
       </a-layout-header>
       <!-- content -->
       <a-layout-content class="layout-content"> 
-        <tabs-content />
+        <!-- <tabs-content /> -->
+        <router-view></router-view>
       </a-layout-content>
     </a-layout>
   </a-layout>
@@ -99,6 +100,7 @@ export default {
   }
   .layout-content {
     flex: none;
+    padding: 12px;
   }
 }
 </style>
