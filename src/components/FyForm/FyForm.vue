@@ -6,9 +6,8 @@
     v-bind="$attrs"
     :ref="formRef || ''"
   >
-    <!-- {{ JSON.stringify(typeof _formItems) }} -->
-    <a-range-picker>33</a-range-picker>
-    <template v-for="(item, index) in _formItems">
+    <!-- {{ JSON.stringify(typeof form_items) }} -->
+    <template v-for="(item, index) in form_items">
       
       <a-form-item
         :key="index + item.attrs.key"
@@ -17,7 +16,6 @@
         v-bind="item.itemAttrs || {}"
         :name="item.attrs.key"
       >
-      {{ item.tag }}
         <slot v-if="item.slot" :name="item.slot" />
         
         <component 
@@ -32,7 +30,7 @@
       </a-form-item>
     </template>
     <div class="form-btn" v-if="submit || reset">
-      <a-button type="primary" @click="handleSubmit" v-if="submit">{{
+      <a-button :style="{ marginRight: '15px' }" type="primary" @click="handleSubmit" v-if="submit">{{
         $attrs.submitContext || "查询"
       }}</a-button>
       <a-button @click="myReset(formRef)" v-if="reset">{{
@@ -114,7 +112,7 @@ export default {
     }
 
     //根据formItem计算出实际需要让页面渲染的真正的_formItem数据
-    const _formItems = computed(() => {
+    const form_items = computed(() => {
       let items = []
       items = props.formItems.map((item) =>
         computeFormItem(item, props.formValue)
@@ -123,7 +121,7 @@ export default {
     })
 
     return {
-      _formItems,
+      form_items,
       [props.formRef]: f_ref,
       myReset,
       handleSubmit,

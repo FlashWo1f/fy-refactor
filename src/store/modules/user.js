@@ -4,7 +4,10 @@ import router, { asyncRoutes } from "@/router"
 const user = {
   namespaced: true,
   state: {
+    info: JSON.parse(localStorage.getItem("hr-system")) || {},
     token: localStorage.getItem("token"),
+    // 不让看新报告的黑名单
+    blacklistInNewReport: [12, 21, 24, 25, 90000001],
     avatar: "",
     username: "",
     roles: [],

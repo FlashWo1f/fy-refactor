@@ -78,9 +78,9 @@ export default {
 </script>
 <style lang="less">
 .app-wapper {
-   display: flex;
+  display: flex;
   overflow: hidden;
-  height: 100vh;
+  min-height: 100vh !important;
   
   .app-header {
     padding: 0;

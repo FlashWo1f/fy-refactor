@@ -19,10 +19,15 @@ import {
   Modal,
   Select,
   RangePicker,
+  DatePicker,
+  Badge,
+  Switch,
+  Radio,
+  Tooltip,
+  InputNumber,
 } from "ant-design-vue"
 import "ant-design-vue/dist/antd.css"
 
-console.log("1@#!@#", RangePicker)
 const components = [
   Form,
   Input,
@@ -44,6 +49,12 @@ const components = [
   Modal,
   Select,
   RangePicker,
+  DatePicker,
+  Badge,
+  Switch,
+  Radio,
+  Tooltip,
+  InputNumber,
 ]
 export function setupAntd(app) {
   components.forEach((component) => {

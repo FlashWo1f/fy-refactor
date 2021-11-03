@@ -3,16 +3,16 @@ const curStatus = activityStatus.map(v => [-1, 3].includes(v.value) ? { ...v, di
 const overdueStatus = activityStatus.map(v => ![-1, 3].includes(v.value) ? { ...v, disabled: true } : { ...v, disabled: false })
 
 export const tableColumns = [
-  { attrs: { label: '序号', minWidth: '50'}, slot: 'order' },
-  { attrs: { label: '活动名称', prop: 'name', minWidth: '180' }, slot: 'name' },
-  { attrs: { label: '开始  /  结束时间', minWidth: '180' }, slot: 'time' },
-  { attrs: { label: '活动状态', minWidth: '110' }, slot: 'actStatus' },
-  { attrs: { label: '是否开启', minWidth: '90' }, slot: 'status' },
-  { attrs: { label: '是否公开', minWidth: '90' }, slot: 'publicFlag' },
-  { attrs: { label: '完成 / 总人数', minWidth: '120' }, slot: 'finished' },
-  { attrs: { label: '创建人', prop: 'createdByName', minWidth: '160' } },
-  { attrs: { label: '参与活动用户', minWidth: '110', fixed: 'right' }, slot: 'userPage' },
-  { attrs: { label: '操作', minWidth: '140', fixed: 'right' }, slot: 'operate' },
+  { title: "序号", slots: { customRender: "no" }, fixed: 'left', width: 60 },
+  { title: '活动名称', slots: { customRender: "name" } },
+  { title: '开始  /  结束时间', slots: { customRender: "time" } },
+  { title: '活动状态', slots: { customRender: "actStatus" } },
+  { title: '是否开启', slots: { customRender: "status" } },
+  { title: '是否公开', slots: { customRender: "publicFlag" } },
+  { title: '完成 / 总人数', slots: { customRender: "finished" } },
+  { title: '创建人', dataIndex: "createdByName" },
+  { title: '参与活动用户', slots: { customRender: "userPage", fixed: 'right' } },
+  { title: '操作', slots: { customRender: "operate" }, fixed: 'right' },
 ]
 
 export const curForm = [
@@ -119,6 +119,7 @@ export const historyForm = [
       valueFormat: "YYYY-MM-DD HH:mm:ss",
       format: "YYYY-MM-DD HH:mm:ss",
       getCalendarContainer: function(e) {
+        console.log('iiiii', e)
         return e.parentNode
       }
     }

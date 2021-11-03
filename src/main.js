@@ -4,6 +4,7 @@ import router from "./router/index"
 import { setupAntd } from "./ant-design-vue"
 import store from "./store"
 import "./permission"
+import './style/global.less'
 
 window.log = console.log
 

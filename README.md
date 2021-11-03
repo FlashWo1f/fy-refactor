@@ -24,11 +24,17 @@ const env = import.meta.env
 ## Vue2 => Vue3 迁移手册
 https://v3.cn.vuejs.org/guide/migration/introduction.html
 
+`composition API`
 ```js
 setup(props, context) {
   log(props.***, context.emit)
 }
 ```
+`option API` 还是和以前一样
+
+`template`
+prop.sync => v-model:prop
+
 
 ## 关于此次重构
 
