@@ -66,6 +66,55 @@
             layout="inline"
             @query="onSubmit"
           />
+          <a-table
+            bordered
+            :data='tableData.list'
+            :loading='tableLoading'
+            :columns="tableColumns"
+          >
+            <template #no="{ index }">
+              {{ (tableData.pageNo - 1) * tableData.pageSize + index + 1 }}
+            </template>
+            <template #name="{ record }">
+              <a-button type="link" @click.stop="handleClickCheck(true, record)">{{ record.name }}</a-button>
+            </template>
+             <template #time="{ record }">
+              {{ `${record.startTime} / ${record.endTime}` }}
+            </template>
+            <template #actStatus="{ record }">
+              <a-badge :status="statusColorMapAntd[record.activityStatusName]" :text="record.activityStatusName" />
+            </template>
+            <template #status="{ record }">
+              <a-popconfirm 
+                :title="`确定要改变此活动的有效性吗？\n${record.status === 1 ? '(此活动关闭后将收录到历史活动tab页下)' : '(此活动开启后若未过期将收录到正在进行tab页下)'}`"
+                ok-text="确认"
+                cancel-text="取消"
+                @confirm="() => triggerActivitySwitch(record)"
+              >
+                <a-switch :checked="record.status === 1" />
+              </a-popconfirm>
+            </template>
+            <template #publicFlag="{ record }">
+              <a-popconfirm 
+                title="确定要改变此活动的公开状态吗？"
+                ok-text="确认"
+                cancel-text="取消"
+                @confirm="() => triggerSwitch(record)"
+              >
+                <a-switch :checked="record.publicFlag === 1" />
+              </a-popconfirm>
+            </template>
+            <template #finished="{ record }">
+              {{ finishAndAllJoined(record) }}
+            </template>
+            <template #userPage="{ record }">
+              <a-button type="link" @click.stop="handleGoUserPage(record.id)">查看</a-button>
+            </template>
+            <template #operate="{ record }">
+              <a-button type="link" @click.stop="handleClickLink(true, record)">生成链接</a-button>
+              <a-button @click.stop="handleClickCheck(true, record)" type="link">查看</a-button>
+            </template>
+          </a-table>
         </a-tab-pane>
       </a-tabs>
       <NewOrEditModal v-model:visible="dialogFormVisible" @query="query" :operate="operate" :detail="detail" />

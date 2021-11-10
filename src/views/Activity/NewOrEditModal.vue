@@ -5,14 +5,32 @@
         基本信息
         <a-button type="link" style="float: right" v-if="myOperate !== 'new'" @click="() => handleSwitchOperate(this.myOperate)">{{ myOperate === "check" ? "编辑" : "取消编辑" }}</a-button>
       </div>
-      <a-form-item label="活动名称:" name="name">
-        <a-input v-model:value="form.name" autocomplete="off" :disabled="myOperate === 'check'" :placeholder="handlePlaceholder('请输入活动名称')"></a-input>
-      </a-form-item>
       <a-form-item label="活动时间:" name="time">
-        <a-range-picker :getCalendarContainer="(e) => e.parentNode" style="width: 100%" :placeholder="['开始时间', '结束时间']" v-model:value="form.time" :show-time="{ format: 'HH:mm:ss' }" :disabled="myOperate === 'check'" valueFormat="YYYY-MM-DD HH:mm:ss" format="YYYY-MM-DD HH:mm:ss"> </a-range-picker>
+        <a-range-picker 
+          :getCalendarContainer="(e) => e.parentNode" 
+          style="width: 100%" 
+          :placeholder="['开始时间', '结束时间']" 
+          v-model:value="form.time" 
+          :disabled="myOperate === 'check'" 
+          valueFormat="YYYY-MM-DD HH:mm:ss" 
+          format="YYYY-MM-DD HH:mm:ss">
+        </a-range-picker>
       </a-form-item>
+      <a-form-item label="活动名称:" name="name">
+        <a-input 
+          v-model:value="form.name"
+          autocomplete="off" 
+          :disabled="myOperate === 'check'" 
+          :placeholder="handlePlaceholder('请输入活动名称')"
+        ></a-input>
+      </a-form-item>
+      
       <a-form-item label="活动备注:">
-        <a-input v-model:value="form.remark" :disabled="myOperate === 'check'" :placeholder="handlePlaceholder('请输入备注')"></a-input>
+        <a-input 
+          v-model:value="form.remark" 
+          :disabled="myOperate === 'check'" 
+          :placeholder="handlePlaceholder('请输入备注')"
+        ></a-input>
       </a-form-item>
       <a-divider />
       <div class="h3">基本属性设定</div>
@@ -157,7 +175,7 @@ export default {
           { whitespace: true, message: "请输入活动名称", trigger: "blur" },
         ],
         time: [
-          { validator: this.validateTime, trigger: "blur" },
+          // { validator: this.validateTime, trigger: "blur" },
           { required: true, message: "请选择活动时间", trigger: "blur" },
         ],
         useCase: [{ required: true, message: "请选择使用场景", trigger: "change" }],
@@ -202,21 +220,20 @@ export default {
       const res = this.gameOptions.filter((v) => v.id === ev);
       this.productCode = res[0].code;
     },
-    validateTime(rule, value) {
-      // console.log("value", value, Array.isArray(value) && !value.length);
-      if ((Array.isArray(value) && !value.length) || value[0] === "" || value[1] === "") {
-        return Promise.reject("请选择活动时间");
-      }
-      return Promise.resolve(1);
-    },
-    validateRequired(rule, value) {
-      if (!value.includes("idNumber") && !value.includes("phone")) {
-        return Promise.reject("身份证/护照 和 手机号必选一项作为唯一标识");
-      } else if (!value.includes("userName")) {
-        return Promise.reject("姓名为必选项");
-      }
-      return Promise.resolve()
-    },
+    // validateTime(rule, value) {
+    //   if ((Array.isArray(value) && !value.length) || value[0] === "" || value[1] === "") {
+    //     return Promise.reject("请选择活动时间");
+    //   }
+    //   return Promise.resolve(1);
+    // },
+    // validateRequired(rule, value) {
+    //   if (!value.includes("idNumber") && !value.includes("phone")) {
+    //     return Promise.reject("身份证/护照 和 手机号必选一项作为唯一标识");
+    //   } else if (!value.includes("userName")) {
+    //     return Promise.reject("姓名为必选项");
+    //   }
+    //   return Promise.resolve()
+    // },
     onTimeChange(a) {
       if (this.dateBackup[0] !== a[0] || this.dateBackup[0] !== a[1]) {
         this.popConfirmVisible = true;
@@ -229,13 +246,14 @@ export default {
       }
     },
     onSubmit(formName) {
-      log('(((((', this.form)
-      if (this.myOperate === "check") return this.$emit("update:visible", false);
-      const onFormSubmit = this.myOperate === "edit" ? editActivity : newActivity;
-      const message = this.myOperate === "new" ? "新建活动成功" : "活动修改成功";
+      // log('(((((', this.form)
+      // if (this.myOperate === "check") return this.$emit("update:visible", false);
+      // const onFormSubmit = this.myOperate === "edit" ? editActivity : newActivity;
+      // const message = this.myOperate === "new" ? "新建活动成功" : "活动修改成功";
       // todo
-      this.$refs[formName].validateFields(
-        ['name', 'time', 'useCase', 'industryModelId', 'publicFlag', 'testerReportAuthority', 'level', 'modelIds', 'limitFlag', 'required'],
+      let p = this.$refs[formName].validateFields(
+        // ['name', 'time', 'useCase'],
+        // ['name', 'time', 'useCase', 'industryModelId', 'publicFlag', 'testerReportAuthority', 'level', 'modelIds', 'limitFlag', 'required'],
         // this.rules,
         // (a, b) => {
         //   log('##########', a,b, typeof a, typeof b)
@@ -269,7 +287,9 @@ export default {
         //   }
         //   return Promise.resolve()
       // }
-      ).then(res => {
+      )
+      log(':::::::::::::::', p)
+      p.then(res => {
         log('结果', res)
       }, err => log('错误', err))
     },
