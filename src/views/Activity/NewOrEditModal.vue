@@ -1,10 +1,18 @@
 <template>
-  <a-modal :title="myOperate === 'edit' ? '编辑活动' : myOperate === 'new' ? '新建活动' : '查看详情'" :visible="visible" okText="确定" :width="800" cancelText="取消" :maskClosable="false" :confirm-loading="confirmLoading" @ok="onSubmit('myForm')" @cancel="$emit('update:visible', false)">
-    <a-form :model="form" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }" ref="myForm" :rules="rules" class="modalform">
+  <a-modal :title="myOperate === 'edit' ? '编辑活动' : myOperate === 'new' ? '新建活动' : '查看详情'" :visible="visible" okText="确定" :width="800" cancelText="取消" :maskClosable="false" :confirm-loading="confirmLoading" @ok="onSubmit('formRef')" @cancel="$emit('update:visible', false)">
+    <a-form :model="form" :label-col="{ span: 6 }" :wrapper-col="{ span: 15 }" ref="formRef" :rules="rules" class="modalform">
       <div class="h3">
         基本信息
         <a-button type="link" style="float: right" v-if="myOperate !== 'new'" @click="() => handleSwitchOperate(this.myOperate)">{{ myOperate === "check" ? "编辑" : "取消编辑" }}</a-button>
       </div>
+      <a-form-item label="活动名称:" name="name">
+        <a-input 
+          v-model:value="form.name"
+          autocomplete="off" 
+          :disabled="myOperate === 'check'" 
+          :placeholder="handlePlaceholder('请输入活动名称')"
+        ></a-input>
+      </a-form-item>
       <a-form-item label="活动时间:" name="time">
         <a-range-picker 
           :getCalendarContainer="(e) => e.parentNode" 
@@ -16,15 +24,6 @@
           format="YYYY-MM-DD HH:mm:ss">
         </a-range-picker>
       </a-form-item>
-      <a-form-item label="活动名称:" name="name">
-        <a-input 
-          v-model:value="form.name"
-          autocomplete="off" 
-          :disabled="myOperate === 'check'" 
-          :placeholder="handlePlaceholder('请输入活动名称')"
-        ></a-input>
-      </a-form-item>
-      
       <a-form-item label="活动备注:">
         <a-input 
           v-model:value="form.remark" 
@@ -47,21 +46,6 @@
       <a-form-item label="添加管理员:">
         <a-select v-model:value="form.adminUserIds" :placeholder="handlePlaceholder('管理员可编辑和查看活动')" mode="multiple" :disabled="myOperate === 'check'" :getPopupContainer="(e) => e.parentNode">
           <a-select-option v-for="item in options" :key="item.account" :value="item.userId">{{ item.name || item.account }}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item required name="industryModelId" v-if="false">
-        <template #label>
-          <a-tooltip>
-            <template #title>
-              新建活动后不可更改模型
-            </template>
-            选择模型
-          </a-tooltip>
-        </template>
-        <a-select v-model:value="form.industryModelId" placeholder="请选择模型" style="width: 100%" :disabled="myOperate !== 'new'" :getPopupContainer="(e) => e.parentNode">
-          <a-select-option v-for="item in modelOptions" :key="item.id" :value="item.id">
-            {{ item.name }}
-          </a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label="添加测评产品:" required name="modelIds">
@@ -135,61 +119,20 @@ import { fetchAllModels, newActivity, editActivity, fetchAllAdmin, fetchModelsIn
 import { assignObj, showMessage, trimFormValue } from "@/utils/utils";
 import { loginFields } from "@/utils/const";
 import { mapGetters } from "vuex";
-export default {
+import { defineComponent, reactive, ref } from 'vue';
+export default defineComponent({
   data() {
     return {
       options: [],
       sceneOptions: [],
       loginFields,
-      currentOperate: "",
       gameOptions: [],
       myOperate: "",
       modelOptions: [],
-      dateBackup: [],
-      popConfirmVisible: false,
-      needConfirm: false,
       // 不用区分使用场景的几个关卡
       noNeedUseCase: [],
       productCode: null,
-      form: {
-        remark: "",
-        name: "",
-        time: null,
-        modelIds: "",
-        // industryModelId: "",
-        publicFlag: "",
-        limitFlag: "",
-        limitNum: "",
-        testerReportAuthority: 2,
-        adminUserIds: [],
-        id: "",
-        level: "",
-        useCase: "",
-        required: [],
-        notRequired: [],
-      },
       confirmLoading: false,
-      rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { whitespace: true, message: "请输入活动名称", trigger: "blur" },
-        ],
-        time: [
-          // { validator: this.validateTime, trigger: "blur" },
-          { required: true, message: "请选择活动时间", trigger: "blur" },
-        ],
-        useCase: [{ required: true, message: "请选择使用场景", trigger: "change" }],
-        industryModelId: [{ required: true, message: "请选择模型", trigger: "blur" }],
-        publicFlag: [{ required: true, message: "请选择是否公开", trigger: "blur" }],
-        testerReportAuthority: [{ required: true, message: "请选择查看权限", trigger: "blur" }],
-        level: [{ required: true, message: "请选择测评人群层级", trigger: "blur" }],
-        modelIds: [{ required: true, message: "请选择测评产品", trigger: "blur" }],
-        limitFlag: [{ required: true, message: "请选择数量设定", trigger: "blur" }],
-        required: [
-          { validator: this.validateRequired, trigger: "blur" },
-          { required: true, message: "请选择登录必选信息", trigger: "blur" },
-        ],
-      },
     };
   },
   props: {
@@ -214,98 +157,109 @@ export default {
       delete this.form.useCase;
     }
   },
+  setup(props, context) {
+    const formRef = ref()
+    const rules =  {
+      name: [
+        { required: true, message: "请输入活动名称", trigger: "blur" },
+        { whitespace: true, message: "请输入活动名称", trigger: "blur" },
+      ],
+      time: [
+        { type: 'array', validator: validateTime, trigger: "change" },
+      ],
+      useCase: [{ type: 'number', required: true, message: "请选择使用场景", trigger: "change" }],
+      publicFlag: [{ type: 'number', required: true, message: "请选择是否公开", trigger: "change" }],
+      testerReportAuthority: [{ type: 'number', required: true, message: "请选择查看权限", trigger: "blur" }],
+      level: [{ type: 'number', required: true, message: "请选择测评人群层级", trigger: "blur" }],
+      modelIds: [{ type: 'number', required: true, message: "请选择测评产品", trigger: "blur" }],
+      limitFlag: [{ type: 'number', required: true, message: "请选择数量设定", trigger: "blur" }],
+      required: [
+        { type: 'array', validator: validateRequired, trigger: "change" },
+        { type: 'array', required: true, message: "请选择登录必选信息", trigger: "change" },
+      ],
+    }
+    const form = reactive({
+      remark: "",
+      name: "",
+      time: [],
+      modelIds: "",
+      publicFlag: undefined,
+      limitFlag: "",
+      limitNum: "",
+      testerReportAuthority: undefined,
+      adminUserIds: [],
+      id: "",
+      level: undefined,
+      useCase: undefined,
+      required: [],
+      notRequired: [],
+    })
+    
+    // 表单字段验证
+    function validateTime(rule, value) {
+      if ((Array.isArray(value) && !value.length) || value[0] === "" || value[1] === "") {
+        return Promise.reject("请选择活动时间");
+      }
+      return Promise.resolve(1);
+    }
+    function validateRequired(rule, value) {
+      if (!value.includes("idNumber") && !value.includes("phone")) {
+        return Promise.reject("身份证/护照 和 手机号必选一项作为唯一标识");
+      } else if (!value.includes("userName")) {
+        return Promise.reject("姓名为必选项");
+      }
+      return Promise.resolve()
+    }
+    return {
+      form,
+      formRef,
+      rules,
+    }
+  },
   methods: {
+    onSubmit() {
+      if (this.myOperate === "check") return this.$emit("update:visible", false);
+      const onFormSubmit = this.myOperate === "edit" ? editActivity : newActivity;
+      const message = this.myOperate === "new" ? "新建活动成功" : "活动修改成功";
+      this.$refs.formRef.validateFields().then(res => {
+        // log('结果', res)
+        const body = trimFormValue(assignObj(this.form));
+        if (body.time) {
+          body.startTime = body.time[0];
+          body.endTime = body.time[1];
+          delete body.time;
+        }
+        this.confirmLoading = true;
+        body.activityLoginOptionParam = {};
+        Array.isArray(body.required) && body.required.forEach((item) => (body.activityLoginOptionParam[item] = 1));
+        Array.isArray(body.notRequired) && body.notRequired.forEach((item) => (body.activityLoginOptionParam[item] = 2));
+        delete body.required;
+        delete body.notRequired;
+        this.noNeedUseCase.includes(body.modelIds) && delete body.useCase;
+        onFormSubmit(body)
+          .then((res) => {
+            if (res.success) {
+              this.$emit("update:visible", false);
+              this.$emit("query");
+              showMessage("success", message);
+            }
+          })
+          .finally(() => (this.confirmLoading = false));
+        return Promise.resolve()
+      }, err => log('错误: 表单信息不完整', err.values))
+    },
     // 选择测评产品
     proChange(ev) {
       const res = this.gameOptions.filter((v) => v.id === ev);
       this.productCode = res[0].code;
-    },
-    // validateTime(rule, value) {
-    //   if ((Array.isArray(value) && !value.length) || value[0] === "" || value[1] === "") {
-    //     return Promise.reject("请选择活动时间");
-    //   }
-    //   return Promise.resolve(1);
-    // },
-    // validateRequired(rule, value) {
-    //   if (!value.includes("idNumber") && !value.includes("phone")) {
-    //     return Promise.reject("身份证/护照 和 手机号必选一项作为唯一标识");
-    //   } else if (!value.includes("userName")) {
-    //     return Promise.reject("姓名为必选项");
-    //   }
-    //   return Promise.resolve()
-    // },
-    onTimeChange(a) {
-      if (this.dateBackup[0] !== a[0] || this.dateBackup[0] !== a[1]) {
-        this.popConfirmVisible = true;
-        this.needConfirm = true;
-      }
     },
     handleSelectUseCase(val) {
       if (val) {
         showMessage("warning", "活动新建后使用场景不可修改");
       }
     },
-    onSubmit(formName) {
-      // log('(((((', this.form)
-      // if (this.myOperate === "check") return this.$emit("update:visible", false);
-      // const onFormSubmit = this.myOperate === "edit" ? editActivity : newActivity;
-      // const message = this.myOperate === "new" ? "新建活动成功" : "活动修改成功";
-      // todo
-      let p = this.$refs[formName].validateFields(
-        // ['name', 'time', 'useCase'],
-        // ['name', 'time', 'useCase', 'industryModelId', 'publicFlag', 'testerReportAuthority', 'level', 'modelIds', 'limitFlag', 'required'],
-        // this.rules,
-        // (a, b) => {
-        //   log('##########', a,b, typeof a, typeof b)
-        //   // return
-        //   !valid && console.log("表单信息不完整", this.form);
-        //   this.needConfirm && showMessage("info", "需要手动确定修改日期提示");
-        //   if (valid && !this.needConfirm) {
-        //     const body = trimFormValue(assignObj(this.form));
-        //     if (body.time) {
-        //       body.startTime = body.time[0];
-        //       body.endTime = body.time[1];
-        //       delete body.time;
-        //     }
-        //     this.confirmLoading = true;
-        //     body.activityLoginOptionParam = {};
-        //     Array.isArray(body.required) && body.required.forEach((item) => (body.activityLoginOptionParam[item] = 1));
-        //     Array.isArray(body.notRequired) && body.notRequired.forEach((item) => (body.activityLoginOptionParam[item] = 2));
-        //     // body.industryModelId === -1 && (body.industryModelId = null)
-        //     delete body.required;
-        //     delete body.notRequired;
-        //     this.noNeedUseCase.includes(body.modelIds) && delete body.useCase;
-        //     onFormSubmit(body)
-        //       .then((res) => {
-        //         if (res.success) {
-        //           this.$emit("update:visible", false);
-        //           this.$emit("query");
-        //           showMessage("success", message);
-        //         }
-        //       })
-        //       .finally(() => (this.confirmLoading = false));
-        //   }
-        //   return Promise.resolve()
-      // }
-      )
-      log(':::::::::::::::', p)
-      p.then(res => {
-        log('结果', res)
-      }, err => log('错误', err))
-    },
     handleSwitchOperate(status) {
-      status === "check" ? (this.myOperate = "edit") : (this.myOperate = "check");
-      if (this.myOperate === "edit" && Array.isArray(this.form.time)) {
-        this.dateBackup = [...this.form.time];
-      }
-    },
-    handlePopConfirmCancel() {
-      this.form.time = [...this.dateBackup];
-      this.handlePopConfirmConfirm();
-    },
-    handlePopConfirmConfirm() {
-      this.popConfirmVisible = false;
-      this.needConfirm = false;
+      status === "check" ? (this.myOperate = "edit") : (this.myOperate = "check")
     },
     handlePlaceholder(text) {
       return this.myOperate === "check" ? "" : text;
@@ -341,21 +295,6 @@ export default {
     });
   },
   watch: {
-    detail: {
-      handler(value) {
-        Object.keys(this.form).forEach((item) => {
-          if (item === "time") {
-            this.form[item] = [value.startTime, value.endTime];
-          } else {
-            this.form[item] = value[item];
-          }
-        })
-        log('&&&&&&', this.form)
-        if (this.myOperate === "edit") this.form.id = value.id;
-      },
-      deep: true,
-      immediate: true,
-    },
     visible(val) {
       if (val) {
         this.myOperate = this.$props.operate;
@@ -370,6 +309,7 @@ export default {
               this.form[item] = this.detail[item];
             }
           });
+          
           this.detail.activityLoginOptionVO &&
             Object.keys(this.detail.activityLoginOptionVO).forEach((v) => {
               if (this.detail.activityLoginOptionVO[v] === 1) {
@@ -387,7 +327,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style lang="less" scoped>
@@ -403,7 +343,4 @@ export default {
 .modalform {
   padding: 0;
 }
-// :deep(.ant-form-item) {
-//   margin-bottom: 0;
-// }
 </style>

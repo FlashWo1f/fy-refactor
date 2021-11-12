@@ -1,7 +1,7 @@
 <template>
   <div class="activity-page">
     <a-card>
-      <a-tabs :active-key="curTab" @change="handleTabsChange">
+      <a-tabs v-model:activeKey="curTab" @change="handleTabsChange">
         <a-tab-pane key="1" tab="正在进行">
           <FyForm
             formRef="currentAct"
@@ -62,15 +62,17 @@
           <FyForm
             formRef="historyAct"
             :formItems="historyForm"
-            :formValue="formValue"
+            v-model:formValue="formValue"
             layout="inline"
             @query="onSubmit"
           />
           <a-table
             bordered
-            :data='tableData.list'
+            :data-source='tableData.list'
             :loading='tableLoading'
             :columns="tableColumns"
+            :style="{ marginTop: '20px' }"
+            rowKey='id'
           >
             <template #no="{ index }">
               {{ (tableData.pageNo - 1) * tableData.pageSize + index + 1 }}
@@ -117,6 +119,7 @@
           </a-table>
         </a-tab-pane>
       </a-tabs>
+      <FyPagination :tableData="tableData" @query="query" />
       <NewOrEditModal v-model:visible="dialogFormVisible" @query="query" :operate="operate" :detail="detail" />
       <LinkModal v-model:visible="linkVisible" :actLink="actLink" v-model:qrCodeLink="qrCodeLink" :actName="actName" />
     </a-card>
@@ -129,8 +132,8 @@ import { onMounted, reactive } from "vue"
 import { tableColumns, curForm, historyForm } from "./options";
 import FyForm from "@/components/FyForm/FyForm.vue"
 import FyPagination from "@/components/FyPagination/pagination.vue"
-import { activityStatus, THEMECOLOR, statusColorMapAntd } from "@/utils/const";
-import { showMessage } from '@/utils/utils'
+import { statusColorMapAntd } from "@/utils/const";
+import { showMessage, trimFormValue } from '@/utils/utils'
 import LinkModal from "./LinkModal.vue";
 import NewOrEditModal from "./NewOrEditModal.vue";
 export default {
@@ -235,7 +238,6 @@ export default {
       this.linkVisible = flag;
     },
     handleClickCheck(flag, row) {
-      console.log(row);
       this.operate = "check";
       if (row) {
         fetchDetailById(row.id).then((res) => {
@@ -265,15 +267,17 @@ export default {
         }
       });
     },
+    onSubmit(params) {
+      const formValue = trimFormValue({
+        ...params,
+      });
+      this.query(formValue)
+    },
   },
   setup() {
     onMounted(() => {
     })
-    function onSubmit(params) {
-      log('onSubmit::', params)
-    }
     return {
-      onSubmit,
     }
   },
   components: {

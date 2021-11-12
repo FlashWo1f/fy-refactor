@@ -22,7 +22,7 @@
           v-else
           :is="item.tag"
           :class="item.itemAttrs.className"
-          v-model="formValue[item.attrs.key]"
+          v-model:value="formValue[item.attrs.key]"
           v-bind="item.attrs || {}"
           @keyup.enter="item.listeners && item.listeners.enterQuery && handleSubmit()"
           v-on="item.listeners || {}"
@@ -71,7 +71,6 @@ export default {
     },
   },
   setup(props, context) {
-    log(111, props, context)
     const f_ref = ref(null)
 
     onMounted(() => {
@@ -108,7 +107,7 @@ export default {
     function myReset(formRef) {
       f_ref.value.resetFields()
       props.onReset && props.onReset(formRef)
-      context.emit("query")
+      context.emit("query", props.formValue)
     }
 
     //根据formItem计算出实际需要让页面渲染的真正的_formItem数据
@@ -127,10 +126,6 @@ export default {
       handleSubmit,
     }
   },
-  methods: {
-    
-
-  },
 }
 </script>
 
@@ -139,7 +134,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   .form-btn {
-    align-self: center;
+    // align-self: center;
   }
 }
 </style>

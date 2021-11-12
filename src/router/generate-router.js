@@ -38,23 +38,28 @@ const datas = [
   {
     path: "/activity",
     name: "activity",
-    component: () => import("@/views/Activity/Activity.vue"),
+    component: Layout,
     // code 错了
     code: "120001",
     meta: { title: "活动管理", icon: "el-icon-share" },
+    redirect: '/activity/index',
     children: [
-      // {
-      //   path: "tester/:id",
-      //   name: "activity-tester",
-      //   component: () => import("@/views/Activity/UserInActivity"),
-      //   meta: {
-      //     title: "活动用户",
-      //     activeMenu: "/activity/index",
-      //     parent: "activity-index",
-      //     completePath: "/activity/tester/:id",
-      //   },
-      //   hidden: true,
-      // },
+      {
+        path: 'index',
+        name: 'activity-id',
+        component: () => import("@/views/Activity/Activity.vue"),
+        meta: { title: "活动管理", icon: "el-icon-share" },
+      },
+      {
+        path: "tester/:id",
+        name: "activity-tester",
+        component: () => import("@/views/Activity/UserInActivity/index.vue"),
+        meta: {
+          title: "活动用户",
+          completePath: "/activity/tester/:id",
+        },
+        hidden: true,
+      },
       // {
       //   path: "contrast",
       //   name: "user-contrast",
@@ -167,7 +172,7 @@ export const generatorDynamicRouter = () => {
         arr.forEach(v => {
           // router.addRoute('dashboard', v)
         })
-        log("t.code", arr)
+        // log("t.code", arr)
         resolve(arr)
       }
     })

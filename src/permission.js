@@ -23,7 +23,7 @@ router.beforeEach(async (to, from, next) => {
     // })
     generatorDynamicRouter().then(res => {
       // store.commit("user/SET_MENUS", res)
-      log('!@#!@#', router)
+      // log('!@#!@#', router)
     })
     next()
   }

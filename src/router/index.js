@@ -42,6 +42,15 @@ export const asyncRoutes = [
     },
   },
   {
+    path: "/act-user/:id",
+    component: () => import("@/views/Activity/UserInActivity/index.vue"),
+    name: "activity-user",
+    meta: {
+      title: "活动用户",
+      icon: "test-tube-line",
+    },
+  },
+  {
     path: "/tester",
     component: () => import("@/views/Tester/Tester.vue"),
     name: "tester",
