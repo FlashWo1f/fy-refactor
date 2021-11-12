@@ -25,6 +25,8 @@ import {
   Radio,
   Tooltip,
   InputNumber,
+  Upload,
+  Cascader,
 } from "ant-design-vue"
 import "ant-design-vue/dist/antd.css"
 
@@ -55,6 +57,8 @@ const components = [
   Radio,
   Tooltip,
   InputNumber,
+  Upload,
+  Cascader,
 ]
 export function setupAntd(app) {
   components.forEach((component) => {

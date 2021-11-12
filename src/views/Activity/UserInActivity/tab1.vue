@@ -24,29 +24,31 @@
         <a-button type="primary" @click="sendSms" style="margin-left:10px" :loading="smsLoading">发送短信通知</a-button>
       </a-tooltip>
     </div>
-    <a-table
-      :columns="tableColumns"
+    <FyTableWrap
       ref="tableRef"
-      rowKey='userId'
-      :dataSource="tableData.list"
-      border
-      :loading='loading'
-      :pagination='false'
+      :selectedRowKeys='selectedRowKeys'
+      @clearSelected='clearSelected'
     >
-        
-    </a-table>
-    <!-- <MyTable :columns="tableColumns" ref="tableRef" :row-key='getRowKeys'
-      :numOfSelected="selectedId.length" @selection-change="handleSelectChange"  :data="tableData.list" border v-loading="tableLoading">
-      <template #order="{ scope: { $index } }">
-        {{ (tableData.pageNo - 1) * tableData.pageSize + $index + 1 }}
-      </template>
-      <template #operate="{ scope }">
-        <a-button type="text" @click="handleSwitchDetail(scope.row)">查看</a-button>
-        <a-button type="text" @click="handleSwitchStar(scope.row)">{{ scope.row.starFlag === 2 ? "标星" : "取消标星" }}</a-button>
-        <a-button type="text" @click="sendInfo(scope.row.userId)" v-if="scope.row.gameStatus == '进行中'">发送提醒</a-button>
-      </template>
-    </MyTable> -->
-    <!-- <UserDetail v-if="showDetail" :visible="showDetail" :handleSwitchModal="handleSwitchDetail" :id="curUserId" :operate="operate" @query="$emit('query')" /> -->
+      <a-table 
+        rowKey='userId'
+        bordered 
+        :columns="tableColumns"
+        :pagination='false'
+        :dataSource='tableData.list'
+        :loading='tableLoading'
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      >
+        <template #order='{ index }'>
+          {{ (tableData.pageNo - 1) * tableData.pageSize + index + 1 }}
+        </template>
+        <template #operate="{ record }">
+          <a-button type="link" @click.stop="handleSwitchDetail(record)">查看</a-button>
+          <a-button @click.stop="handleSwitchStar(record)" type="link">{{ record.starFlag === 2 ? "标星" : "取消标星" }}</a-button>
+          <a-button type="link" @click="sendInfo(record.userId)" v-if="record.gameStatus == '进行中'">发送提醒</a-button>
+        </template> 
+      </a-table>
+    </FyTableWrap>
+    <UserDetail v-if="showDetail" :visible="showDetail" :handleSwitchModal="handleSwitchDetail" :id="curUserId" :operate="operate" @query="$emit('query')" />
   </div>
 </template>
 
@@ -56,7 +58,8 @@ import { tableColumns, formItems } from './options'
 import { showMessage, assignObj, trimFormValue, deleteEmptyField, showNotification } from "@/utils/utils";
 import { sendSmsToTester } from "@/api/activity";
 import axios from 'axios'
-// import UserDetail from "./UserDetail";
+import FyTableWrap from '@/components/FyTableWrap/table.vue'
+import UserDetail from "./UserDetail.vue"
 export default {
   data() {
     this.tableColumns = tableColumns
@@ -72,17 +75,18 @@ export default {
       curUserId: '',
       showDetail: false,
       selected: [],
+      selectedRowKeys: [],
     }
   },
   mounted() {
-    // this.exactData = {
-    //   activityId: this.activityId,
-    // };
-    // this.headers = {
-    //   "x-access-token": this.token,
-    //   "x-user-id": this.userId,
-    //   "x-user-type": 2,
-    // }
+    this.exactData = {
+      activityId: this.activityId,
+    };
+    this.headers = {
+      "x-access-token": this.token,
+      "x-user-id": this.userId,
+      "x-user-type": 2,
+    }
   },
   mixins: [tab_mixin],
   props: {
@@ -105,19 +109,22 @@ export default {
     }
   },
   components: {
-    // UserDetail,
+    FyTableWrap,
+    UserDetail,
   },
   methods: {
-    handleselectchange(selection){
-      // console.log(123)
-    },
     handleSwitchDetail(detail, flag = true) {
       this.operate = "check";
       this.curUserId = detail.userId;
+      log('!@#!@3', this.curUserId)
       this.showDetail = flag;
     },
     clearSelected() {
-      this.$refs.tableRef.clearSelection()
+      this.selectedRowKeys = []
+    },
+    onSelectChange(selectedRowKeys) {
+      console.log('selectedRowKeys changed: ', selectedRowKeys)
+      this.selectedRowKeys = selectedRowKeys
     },
     getRowKeys(row) {
       return row.userId
@@ -131,9 +138,9 @@ export default {
       if (typeof(item) === 'number') {
         this.selectedId = [item];
       }
-      this.$store.state.common.selectedArr = this.selectedId;
-      this.$store.state.common.isSendModal = true;
-      this.$store.state.common.sendTitle = title;
+      this.$store.commit('SET_SELECTED_ARR', this.selectedId)
+      this.$store.commit('SET_SEND_MODAL', true)
+      this.$store.commit('SET_SEND_TITLE', title)
     },
     sendSms() {
       this.smsLoading = true;

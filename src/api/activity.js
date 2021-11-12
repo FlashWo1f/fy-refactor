@@ -1,4 +1,4 @@
-import $axios from "./request";
+import $axios, { get } from "./request";
 
 export function getActivityTable(body) {
   return $axios.post("/hr/activity/page", {
@@ -35,7 +35,7 @@ export function triggerSwitchById(body) {
 
 // 拿到所有的模型
 export function fetchAllModels(params) {
-  return $axios.get("/hr/user/tool/select", {
+  return get("/hr/user/tool/select", {
     ...params
   });
 }
@@ -49,7 +49,7 @@ export function newActivity(body) {
 
 // 根据ID查询详情
 export function fetchDetailById(id) {
-  return $axios.get(`/hr/activity/${id}/detail`);
+  return get(`/hr/activity/${id}/detail`);
 }
 
 // 启用/禁用活动
@@ -91,28 +91,28 @@ export function uploadExcel(params) {
 
 // 批量下载pdf 返回压缩包
 export function batchDownloadPdf(params) {
-  return $axios.get("/hr/report/pdf/batch/download", {
+  return get("/hr/report/pdf/batch/download", {
     ...params
   });
 }
 
 // 受测者信息下载
 export function batchDownloadInfo(params) {
-  return $axios.get("/hr/participant/good/future/download", {
+  return get("/hr/participant/good/future/download", {
     ...params
   });
 }
 
 // excel报告导出
 export function batchDownloadScoreExcel(params) {
-  return $axios.get("/hr/report/export", {
+  return get("/hr/report/export", {
     ...params
   });
 }
 
 // 活动维度
 export function dimensionality(id) {
-  return $axios.get(`/hr/activity/${id}/dimensionality`);
+  return get(`/hr/activity/${id}/dimensionality`);
 }
 
 // tab2 分数管理
@@ -126,15 +126,15 @@ export function fetchScoreTable(body) {
 
 // 管理员数组
 export function fetchAllAdmin() {
-  return $axios.get("/hr/user/list")
+  return get("/hr/user/list")
 }
 // 场景列表
 export function fetchScene(){
-  return $axios.get('/hr/activity/useCase/list')
+  return get('/hr/activity/useCase/list')
 }
 
 export function fetchUserDetailInAct(params) {
-  return $axios.get("/hr/participant/get", {
+    return get("/hr/participant/get", {
     ...params
   })
 }
@@ -146,7 +146,7 @@ export function uploadImage(params){
 }
 // 新建活动选择模型列表 no params
 export function fetchModelsInNewAct() {
-  return $axios.get("/hr/industry/model/select")
+  return get("/hr/industry/model/select")
 }
 
 // 根据 activityId & userId 拿到数据进行交叉对比
@@ -158,7 +158,7 @@ export function getCompareByUserId(body) {
 
 // activityId => Is activity binding model 
 export function isBindingModal(activityId) {
-  return $axios.get(`/hr/activity/${activityId}/have/model`)
+  return get(`/hr/activity/${activityId}/have/model`)
 }
 
 export function sendSmsToTester(body) {
@@ -169,5 +169,5 @@ export function sendSmsToTester(body) {
 
 // 判定显示什么报告
 export function verifyType(activityId) {
-  return $axios.get(`/hr/activity/useCase?activityId=${activityId}`)
+  return get(`/hr/activity/useCase?activityId=${activityId}`)
 }

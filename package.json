@@ -16,7 +16,8 @@
     "store": "^2.0.12",
     "vue": "^3.2.16",
     "vue-router": "^4.0.1",
-    "vuex": "^4.0.0-rc.2"
+    "vuex": "^4.0.0-rc.2",
+    "wangeditor": "^4.7.9"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",

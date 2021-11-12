@@ -1,17 +1,22 @@
 <template>
   <div>
-    <el-dialog width="1100px" :visible.sync="$store.state.common.isSendModal" :title="$store.state.common.sendTitle" @opened="setEditor">
+    <a-modal 
+      width="1100px" 
+      v-model:visible="$store.state.common.isSendModal" 
+      :title="$store.state.common.sendTitle" 
+      @opened="setEditor"
+    >
       <div class="sendModal">
-        <a-form-model ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-model-item ref="name" label="邮件主题" prop="subject">
-            <a-input v-model="form.subject" placeholder="请输入邮件主题" />
-          </a-form-model-item>
-          <a-form-model-item ref="name" label="可选变量" style="line-height:40px">
+        <a-form ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
+          <a-form-item ref="name" label="邮件主题" prop="subject">
+            <a-input v-model:value="form.subject" placeholder="请输入邮件主题" />
+          </a-form-item>
+          <a-form-item ref="name" label="可选变量" style="line-height:40px">
             <div class="variable">
               <p v-for="item in variableList" :key="item.id" @click="labelAppend(item)">{{ item.name }}</p>
             </div>
-          </a-form-model-item>
-          <a-form-model-item ref="name" label="邮件正文" prop="emailTemplate">
+          </a-form-item>
+          <a-form-item ref="name" label="邮件正文" prop="emailTemplate">
             <div class="editor-bar" ref="editorBar">
               <div class="file-icon">
                 <img src="https://static.upupfarm.com/editor/file_icon.png" alt="" @click="$refs.inputFile.click()" />
@@ -23,21 +28,23 @@
             <div class="file-list" v-if="form.attachments.length">
               <FileItem class="file-item" v-for="(item, index) in form.attachments" :key="index" :file="item" @delFile="delFile(index)"></FileItem>
             </div>
-          </a-form-model-item>
-        </a-form-model>
+          </a-form-item>
+        </a-form>
       </div>
-      <span slot="footer" class="dialog-footer">
-        <a-button @click="$store.state.common.isSendModal = false">取 消</a-button>
-        <a-button type="primary" @click="handleOk">确 定</a-button>
-      </span>
-    </el-dialog>
+      <template #footer>
+        <span class="dialog-footer">
+          <a-button @click="$store.commit('SET_SEND_MODAL', false)">取 消</a-button>
+          <a-button type="primary" @click="handleOk">确 定</a-button>
+        </span>
+      </template>
+    </a-modal>
     <!-- <div ref="editors" style="text-align:left"></div> -->
   </div>
 </template>
 <script>
 import E from "wangeditor";
 import email from "@/api/email";
-import FileItem from "@/components/FileItem";
+import FileItem from "@/components/FileItem.vue";
 import tab_mixin from "./tab_mixin";
 import { uploadImage } from "@/api/activity";
 import axios from "axios";
@@ -89,7 +96,7 @@ export default {
   components: {
     FileItem,
   },
-  props: ["ids", "title"],
+  props: ["ids"],
   // watch: {
   //   '$store.state.common.sendTitle': function(val) {
   //     val == "发送通知" ? (this.form.subject = "【扶摇职上】UpUp游戏化测评测试邀请") : (this.form.subject = "【扶摇职上】UpUp游戏化测评测试提醒");
@@ -214,7 +221,6 @@ export default {
           return false;
         }
       });
-      //
     },
     async submitData() {
       this.form.userIds = this.$store.state.common.selectedArr;

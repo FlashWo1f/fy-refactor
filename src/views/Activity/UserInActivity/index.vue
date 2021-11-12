@@ -23,7 +23,7 @@
       </a-tab-pane>
     </a-tabs>
     <Pagination :tableData="tableData" @query="query" />
-    <!-- <sendMsg :title="sendTitle" @clearSelected="clearSelected"></sendMsg> -->
+    <sendMsg @clearSelected="clearSelected"></sendMsg>
     <!-- <UserDetail v-if="showDetail" :visible="showDetail" :handleSwitchModal="handleSwitchDetail" :id="curUserId" :operate="operate" @query="query" /> -->
   </a-card>
 </template>
@@ -33,7 +33,7 @@ import Pagination from "@/components/FyPagination/pagination.vue";
 // import UserDetail from "./UserDetail";
 import { assignObj, trimFormValue, deleteEmptyField } from "@/utils/utils";
 import { fetchActivityUser, EditStar, dimensionality, fetchScoreTable, getCompareByUserId, isBindingModal, sendSmsToTester } from "@/api/activity";
-// import sendMsg from "./sendMsg";
+import sendMsg from "./sendMsg.vue"
 import Tab1 from "./tab1.vue"
 import Tab2 from "./tab2.vue"
 import { tableColumns, columns, formItems, formItemsOfScore } from "./options";
@@ -98,7 +98,7 @@ export default {
     localStorage.setItem("curActId", id);
   },
   mounted() {
-    // this.query();
+    this.query();
     this.options = [];
   },
   watch: {
@@ -176,15 +176,15 @@ export default {
       this.showDetail = flag;
     },
     clearSelected() {
-      const ref = this.curTab === "1" ? this.$refs.tab1.$refs.tableRef : this.$refs.tab2.$refs.multipleTable;
-      ref && ref.clearSelection();
+      const ref = this.curTab === "1" ? this.$refs.tab1 : this.$refs.tab2.$refs.multipleTable;
+      ref && ref.clearSelected();
     },
   },
   components: {
     // TableOperate,
     Pagination,
     // UserDetail,
-    // sendMsg,
+    sendMsg,
     Tab1,
     Tab2,
   },

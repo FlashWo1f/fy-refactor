@@ -250,7 +250,12 @@ export default {
       }
     },
     handleGoUserPage(id) {
-      this.$router.push(`/activity/tester/${id}`);
+      this.$router.push({
+        name: 'activity-user',
+        params: {
+          id
+        }
+      });
     },
     handleTabsChange(e) {
       this.curTab = e;

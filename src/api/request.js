@@ -50,6 +50,7 @@ const errorHandler = error => {
 
 // request interceptor
 request.interceptors.request.use(config => {
+  log('HHHh', config)
   const url = config.url;
   // config.url = `/api${url}`;
   // config.url = `http://111.231.87.127:18081${url}`

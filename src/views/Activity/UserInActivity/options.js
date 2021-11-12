@@ -1,14 +1,13 @@
 export const tableColumns = [
-  { attrs: { type: "selection", width: "50", fixed: "left", reserveSelection: true } },
-  { attrs: { label: "序号", minWidth: "50", fixed: "left" }, slot: "order" },
-  { attrs: { label: "姓名", prop: "name", minWidth: "120", fixed: "left" } },
-  { attrs: { label: "身份证 / 护照", prop: "idNumber", minWidth: "200" } },
-  { attrs: { label: "工号", prop: "jobNumber", minWidth: "120" } },
-  { attrs: { label: "手机号", prop: "phone", minWidth: "150" } },
-  { attrs: { label: "邮箱", prop: "email", minWidth: "160" } },
-  { attrs: { label: "测评状态", prop: "gameStatus", minWidth: "150" } },
-  { attrs: { label: "完成时间", prop: "endAt", minWidth: "180" } },
-  { attrs: { label: "操作", minWidth: 120, fixed: "right" }, slot: "operate" },
+  { title: '序号', width: 50, slots: { customRender: 'order' } },
+  { title: '姓名', dataIndex: "name", width: 100 },
+  { title: '身份证 / 护照', dataIndex: "idNumber", width: 140 },
+  { title: '工号', dataIndex: "jobNumber", width: 70 },
+  { title: '手机号', dataIndex: "phone", width: 120 },
+  { title: '邮箱', dataIndex: "email", width: 120 },
+  { title: '测评状态', dataIndex: "gameStatus", width: 80 },
+  { title: '完成时间', dataIndex: "endAt", width: 150 },
+  { title: '操作', width: 150, slots: { customRender: 'operate' } },
 ]
 
 export const tableColumnsOfScore = [
