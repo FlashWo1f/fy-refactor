@@ -8,7 +8,7 @@
     >
       <div class="sendModal">
         <a-form ref="ruleForm" :model="form" :rules="rules" :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item ref="name" label="邮件主题" prop="subject">
+          <a-form-item ref="name" label="邮件主题" name="subject">
             <a-input v-model:value="form.subject" placeholder="请输入邮件主题" />
           </a-form-item>
           <a-form-item ref="name" label="可选变量" style="line-height:40px">
@@ -16,7 +16,7 @@
               <p v-for="item in variableList" :key="item.id" @click="labelAppend(item)">{{ item.name }}</p>
             </div>
           </a-form-item>
-          <a-form-item ref="name" label="邮件正文" prop="emailTemplate">
+          <a-form-item ref="name" label="邮件正文" name="emailTemplate">
             <div class="editor-bar" ref="editorBar">
               <div class="file-icon">
                 <img src="https://static.upupfarm.com/editor/file_icon.png" alt="" @click="$refs.inputFile.click()" />
@@ -49,6 +49,7 @@ import tab_mixin from "./tab_mixin";
 import { uploadImage } from "@/api/activity";
 import axios from "axios";
 import { mapGetters } from "vuex";
+import { showMessage } from '@/utils/utils'
 export default {
   mixin: [tab_mixin],
   data() {
@@ -97,11 +98,18 @@ export default {
     FileItem,
   },
   props: ["ids"],
-  // watch: {
-  //   '$store.state.common.sendTitle': function(val) {
-  //     val == "发送通知" ? (this.form.subject = "【扶摇职上】UpUp游戏化测评测试邀请") : (this.form.subject = "【扶摇职上】UpUp游戏化测评测试提醒");
-  //   },
-  // },
+  watch: {
+    '$store.state.common.isSendModal': function (val) {
+      if (val) {
+        this.$nextTick(() => {
+          this.setEditor()
+        })
+      }
+    },
+    // '$store.state.common.sendTitle': function(val) {
+    //   val == "发送通知" ? (this.form.subject = "【扶摇职上】UpUp游戏化测评测试邀请") : (this.form.subject = "【扶摇职上】UpUp游戏化测评测试提醒");
+    // },
+  },
   created() {},
   mounted() {},
   computed: {
@@ -194,12 +202,11 @@ export default {
       if (res.result && res.result.url) {
         return res.result.url;
       } else {
-        return this.$message.error("上传失败");
+        return showMessage('error', "上传失败");
       }
     },
     // 添加节点
     labelAppend(item) {
-      console.log(this.editor.txt);
       this.editor.cmd.do(
         "insertHTML",
         `<span style="border-radius:20px;
@@ -213,14 +220,14 @@ export default {
       );
     },
     handleOk(e) {
-      this.$refs.ruleForm.validate((valid) => {
-        if (valid) {
-          this.submitData();
-        } else {
-          console.log("error submit!!");
-          return false;
+      this.$refs.ruleForm.validate().then(
+        res => {
+          this.submitData()
+        },
+        err => {
+          console.log("error submit!!", err)
         }
-      });
+      )
     },
     async submitData() {
       this.form.userIds = this.$store.state.common.selectedArr;
@@ -235,8 +242,8 @@ export default {
       console.log(this.form);
       const res = await email.sendEmail(this.form);
       if (res.success) {
-        this.$message.success("发送邮件成功");
-        this.$store.state.common.isSendModal = false;
+        showMessage('success', "发送邮件成功");
+        this.$store.commit('SET_SEND_MODAL', false)
       }
     },
   },

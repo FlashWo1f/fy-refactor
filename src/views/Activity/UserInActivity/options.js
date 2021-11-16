@@ -19,28 +19,11 @@ export const tableColumnsOfScore = [
 ]
 
 export const columns = [
-  {
-    prop: "name",
-    label: "姓名",
-    visible: true,
-    width: "120px",
-    fixed: "left",
-    sortable: "custom",
-  },
-  {
-    prop: "endAt",
-    label: "完成时间",
-    visible: true,
-    width: "150px",
-    sortable: "custom",
-  },
-  {
-    prop: "idNumber",
-    label: "身份证/护照",
-    visible: true,
-    width: "160px",
-    fixed: "left",
-  },
+  { title: '姓名', dataIndex: "name", visible: true, width: 120, fixed: 'left', sorter: true },
+  { title: '身份证/护照', dataIndex: "idNumber", visible: true, width: 160, fixed: 'left' },
+  { title: '完成时间', dataIndex: "endAt", visible: true, width: 150, sorter: true  },
+  { title: '下载报告', visible: true, width: 70, slots: { customRender: 'report' }, fixed: 'right' },
+  { title: '操作',  visible: true, width: 150, slots: { customRender: 'operate' }, fixed: 'right' },
 ]
 
 export const formItems = [

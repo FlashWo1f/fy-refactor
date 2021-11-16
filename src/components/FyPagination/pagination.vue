@@ -32,11 +32,11 @@ export default {
   methods: {
     onChange(pageNo, pageSize) {
       this.$emit('query', { pageNo, pageSize: pageSize || 10 } )
-      console.log('pageNo, pageSize', pageNo, pageSize)
+      // console.log('pageNo, pageSize', pageNo, pageSize)
     },
     onSizeChange(current, size) {
       this.$emit('query', { pageSize: size, pageNo: current || 1} )
-      console.log('current, size', current, size)
+      // console.log('current, size', current, size)
     }
   }
 };

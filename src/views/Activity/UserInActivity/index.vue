@@ -15,6 +15,7 @@
       <a-tab-pane key="2" tab="分数管理">
         <Tab2 
           ref="tab2" 
+          :curTab="curTab"
           @query="query" 
           v-model:formValue="formValue1" 
           :tableLoading="tableLoading" 
@@ -114,11 +115,14 @@ export default {
   },
   methods: {
     query(params = {}, doNotClearSelected = false) {
+      // 在视觉上 Antdv 只支持同时单列排序
       if(params.hasOwnProperty("completeTimeOrderType")){
         this.formValue1.completeTimeOrderType = params.completeTimeOrderType;
+        this.formValue1.nameOrderType = null
       }
       if(params.hasOwnProperty("nameOrderType")){
         this.formValue1.nameOrderType = params.nameOrderType;
+        this.formValue1.completeTimeOrderType = null
       }
       const formValue = this.curTab === "1" ? this.formValue : this.formValue1;
       console.log(JSON.stringify(this.formValue1));
@@ -145,7 +149,7 @@ export default {
             });
           }
           !doNotClearSelected && this.clearSelected();
-          this.tableData.list.forEach((item) => {
+          this.tableData.list?.forEach((item) => {
             Array.isArray(item.scores) &&
               item.scores.map((temp) => {
                 item[temp.code] = temp;
@@ -176,7 +180,7 @@ export default {
       this.showDetail = flag;
     },
     clearSelected() {
-      const ref = this.curTab === "1" ? this.$refs.tab1 : this.$refs.tab2.$refs.multipleTable;
+      const ref = this.curTab === "1" ? this.$refs.tab1 : this.$refs.tab2;
       ref && ref.clearSelected();
     },
   },

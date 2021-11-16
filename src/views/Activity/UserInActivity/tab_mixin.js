@@ -11,7 +11,7 @@ export default {
     this.activityId = id;
   },
   computed: {
-    ...mapGetters(["selectedItem", "token", "userId"]),
+    ...mapGetters(["token", "userId"]),
   },
   methods: {
     handleSwitchStar(allFields) {
@@ -26,9 +26,9 @@ export default {
         }
       });
     },
-    handleSelectChange(selected) {
-      this.selected = selected;
-      this.selectedId = selected.map((item) => item.userId);
+    onSelectChange(selectedRowKeys, selectedRow) {
+      this.selectedId = selectedRowKeys
+      this.selectedItem = selectedRow
     },
   },
   components: {

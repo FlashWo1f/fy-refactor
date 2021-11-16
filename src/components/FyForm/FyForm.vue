@@ -33,7 +33,7 @@
       <a-button :style="{ marginRight: '15px' }" type="primary" @click="handleSubmit" v-if="submit">{{
         $attrs.submitContext || "查询"
       }}</a-button>
-      <a-button @click="myReset(formRef)" v-if="reset">{{
+      <a-button :style="{ marginLeft: '0' }" @click="myReset(formRef)" v-if="reset">{{
         $attrs.resetContext || "重置"
       }}</a-button>
     </div>

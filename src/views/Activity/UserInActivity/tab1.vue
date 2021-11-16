@@ -11,7 +11,7 @@
       <a-upload class="upload-demo" :action="uploadUrl()" :headers="headers" :on-success="uploadSuccess" :on-error="uploadFail" :data="exactData" :before-upload="beforeUploadFile" accept=".xlsx">
         <a-button id="upBtn" type="primary" style="display: none">点击上传</a-button>
       </a-upload>
-      <a-popconfirm title="已经有模板了嘛" ok-text="是的，直接上传" canca-text="下载模板" @confirm="confirmUploadTester" @cancel="downloadTemplate">
+      <a-popconfirm title="已经有模板了嘛" ok-text="是的，直接上传" cancel-text="下载模板" @confirm="confirmUploadTester" @cancel="downloadTemplate">
         <a-button type="primary" :loading="uploadLoading">点击上传</a-button>
       </a-popconfirm>
       <a-button type="default" @click="handleDownloadInfo" :loading="infoLoading">下载用户信息</a-button>
@@ -26,7 +26,7 @@
     </div>
     <FyTableWrap
       ref="tableRef"
-      :selectedRowKeys='selectedRowKeys'
+      :selectedRowKeys='selectedId'
       @clearSelected='clearSelected'
     >
       <a-table 
@@ -36,7 +36,7 @@
         :pagination='false'
         :dataSource='tableData.list'
         :loading='tableLoading'
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :row-selection="{ selectedRowKeys: selectedId, onChange: onSelectChange }"
       >
         <template #order='{ index }'>
           {{ (tableData.pageNo - 1) * tableData.pageSize + index + 1 }}
@@ -75,7 +75,6 @@ export default {
       curUserId: '',
       showDetail: false,
       selected: [],
-      selectedRowKeys: [],
     }
   },
   mounted() {
@@ -120,11 +119,10 @@ export default {
       this.showDetail = flag;
     },
     clearSelected() {
-      this.selectedRowKeys = []
+      this.selectedId = []
     },
     onSelectChange(selectedRowKeys) {
-      console.log('selectedRowKeys changed: ', selectedRowKeys)
-      this.selectedRowKeys = selectedRowKeys
+      this.selectedId = selectedRowKeys
     },
     getRowKeys(row) {
       return row.userId

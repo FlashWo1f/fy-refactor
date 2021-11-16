@@ -7,17 +7,20 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^6.0.1",
     "ant-design-vue": "^2.0.0-rc.3",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "echarts": "^5.0.2",
+    "file-saver": "^2.0.5",
+    "jszip": "^3.5.0",
     "lodash-es": "^4.17.21",
     "mockjs": "^1.1.0",
     "store": "^2.0.12",
     "vue": "^3.2.16",
     "vue-router": "^4.0.1",
     "vuex": "^4.0.0-rc.2",
-    "wangeditor": "^4.7.9"
+    "wangeditor": "^3.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",

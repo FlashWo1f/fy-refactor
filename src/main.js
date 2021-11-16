@@ -7,6 +7,8 @@ import "./permission"
 import './style/global.less'
 
 window.log = console.log
+// todo delete
+console.warn = () => {}
 
 const app = createApp(App)
 

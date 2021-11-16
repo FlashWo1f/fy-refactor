@@ -4,6 +4,7 @@ import storage from 'store'
 import notification from 'ant-design-vue/es/notification'
 import { VueAxios } from './axios'
 import { messages } from '@/utils/resetMessage'
+import { showMessage } from '@/utils/utils'
 import { ACCESS_TOKEN, ACCESS_TYPE, ADMIN_ACCESS_ACTIVITYID } from '@/store/mutation-types'
 
 const env = import.meta.env
@@ -37,7 +38,7 @@ const errorHandler = error => {
         description: 'Authorization verification failed'
       })
       if (token) {
-        store.dispatch('Logout').then(() => {
+        store.dispatch('user/LogoutResult').then(() => {
           setTimeout(() => {
             window.location.reload()
           }, 1500)
@@ -50,7 +51,6 @@ const errorHandler = error => {
 
 // request interceptor
 request.interceptors.request.use(config => {
-  log('HHHh', config)
   const url = config.url;
   // config.url = `/api${url}`;
   // config.url = `http://111.231.87.127:18081${url}`
@@ -74,7 +74,7 @@ request.interceptors.response.use(response => {
       const reader = new FileReader()
       reader.onload = e => {
         const json = JSON.parse(e.target.result)
-        !json.success && messages('error', json.error || '导出失败')
+        !json.success && showMessage('error', json.error || '导出失败')
       }
       reader.readAsText(response.data)
       return Promise.reject()
@@ -87,7 +87,7 @@ request.interceptors.response.use(response => {
     }
     if (code === '-20001' || code === '-20002') {
       // source.cancel(response.data.error || '用户token错误或过期')
-      store.dispatch('Logout').then(() => {
+      store.dispatch('user/LogoutResult').then(() => {
         // setTimeout(() => {
         //   // source = getCancelToken()
         // }, 1500);
