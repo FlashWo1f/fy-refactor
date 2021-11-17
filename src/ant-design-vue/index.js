@@ -29,6 +29,7 @@ import {
   Cascader,
   Checkbox,
   CheckboxGroup,
+  ConfigProvider,
 } from "ant-design-vue"
 import "ant-design-vue/dist/antd.css"
 import * as iconsVue from '@ant-design/icons-vue'
@@ -63,6 +64,7 @@ const components = [
   Cascader,
   Checkbox,
   CheckboxGroup,
+  ConfigProvider,
 ]
 
 const icons = [

@@ -60,6 +60,15 @@ export const asyncRoutes = [
     },
   },
   {
+    path: "/user",
+    component: () => import("@/views/User/User.vue"),
+    name: "user",
+    meta: {
+      title: "管理员",
+      icon: "test-tube-line",
+    },
+  },
+  {
     path: "/echart",
     component: BlankLayout,
     name: "echart",

@@ -8,26 +8,54 @@
   >
     <!-- {{ JSON.stringify(typeof form_items) }} -->
     <template v-for="(item, index) in form_items">
-      
-      <a-form-item
-        :key="index + item.attrs.key"
-        v-if="item._ifRender"
-        :class="item.itemAttrs.className"
-        v-bind="item.itemAttrs || {}"
-        :name="item.attrs.key"
-      >
-        <slot v-if="item.slot" :name="item.slot" />
-        
-        <component 
-          v-else
-          :is="item.tag"
+      <!-- 适用信息表单 -->
+      <template v-if="Array.isArray(item)">
+        <a-row :key='index'>
+          <a-col :span="child.col || 12" v-for='(child, idx) in item' :key='idx + child.attrs.key'>
+            <a-form-item
+              :key="index + child.attrs.key"
+              v-if="child._ifRender"
+              :class="child.itemAttrs.className"
+              v-bind="child.itemAttrs || {}"
+              :name="child.attrs.key"
+            >
+              <slot v-if="child.slot" :name="child.slot" />
+              
+              <component 
+                v-else
+                :is="child.tag"
+                :class="child.itemAttrs.className"
+                v-model:value="formValue[child.attrs.key]"
+                v-bind="child.attrs || {}"
+                @keyup.enter="child.listeners && child.listeners.enterQuery && handleSubmit()"
+                v-on="child.listeners || {}"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </template>
+      <!-- 适用表格搜索框 -->
+      <template v-else>
+        <a-form-item
+          :key="index + item.attrs.key"
+          v-if="item._ifRender"
           :class="item.itemAttrs.className"
-          v-model:value="formValue[item.attrs.key]"
-          v-bind="item.attrs || {}"
-          @keyup.enter="item.listeners && item.listeners.enterQuery && handleSubmit()"
-          v-on="item.listeners || {}"
-        />
-      </a-form-item>
+          v-bind="item.itemAttrs || {}"
+          :name="item.attrs.key"
+        >
+          <slot v-if="item.slot" :name="item.slot" />
+          
+          <component 
+            v-else
+            :is="item.tag"
+            :class="item.itemAttrs.className"
+            v-model:value="formValue[item.attrs.key]"
+            v-bind="item.attrs || {}"
+            @keyup.enter="item.listeners && item.listeners.enterQuery && handleSubmit()"
+            v-on="item.listeners || {}"
+          />
+        </a-form-item>
+      </template>
     </template>
     <div class="form-btn" v-if="submit || reset">
       <a-button :style="{ marginRight: '15px' }" type="primary" @click="handleSubmit" v-if="submit">{{
@@ -74,7 +102,6 @@ export default {
     const f_ref = ref(null)
 
     onMounted(() => {
-      // console.log('f_reff_reff_ref', f_ref.value)
     })
 
     function computeFormItem(formItem, Model) {
@@ -113,8 +140,11 @@ export default {
     //根据formItem计算出实际需要让页面渲染的真正的_formItem数据
     const form_items = computed(() => {
       let items = []
-      items = props.formItems.map((item) =>
-        computeFormItem(item, props.formValue)
+      items = props.formItems.map((item) => 
+        Array.isArray(item) ?
+          item.map(v => computeFormItem(v, props.formValue))
+          :
+          computeFormItem(item, props.formValue)
       )
       return items
     })

@@ -1,6 +1,6 @@
 <template>
   <div class="table-wrapper">
-    <a-alert :closable="false" class="margin10" show-icon>
+    <a-alert :closable="false" class="margin10" show-icon v-if='!!selectedRowKeys'>
       <template #message>
         <div>
           已选择&nbsp;&nbsp;&nbsp;
@@ -10,7 +10,7 @@
       </template>
     </a-alert>
     <slot></slot>
-    <!-- <Pagination v-model:tableData='tableData' @query="query" /> -->
+    <Pagination v-if='pagi' v-model:tableData='tableData' @query="query" />
   </div>
 </template>
 
@@ -25,12 +25,20 @@ export default {
   inheritAttrs: false,
   computed: {
     hasSelected() {
-      return this.selectedRowKeys.length > 0
+      return this.selectedRowKeys && this.selectedRowKeys.length > 0
     }
   },
+  created() {
+    log('selectedRowKeys', this.selectedRowKeys)
+  },
   props: {
+    pagi: {
+      type: Boolean,
+      default: true,
+    },
+    // 传入 false 则不显示 alert
     selectedRowKeys: {
-      type: Array,
+      type: [Array, Boolean],
       default: () => ([])
     },
     tableData: {
@@ -41,12 +49,12 @@ export default {
         pageSize: 10,
         total: 0
       })
-    }
+    },
   },
   methods: {
-    // query(params) {
-    //   this.$emit('query', params)
-    // },
+    query(params) {
+      this.$emit('query', params)
+    },
   },
   components: {
     Pagination,
